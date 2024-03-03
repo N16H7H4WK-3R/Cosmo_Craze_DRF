@@ -176,6 +176,36 @@ class AdminRegistrationAPIView(APIView):
         threading.Thread(target=send_email, args=(email, subject, message)).start()
 
 
+class FetchUserDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        if user.role == 3:
+            customer = Customer.objects.get(pk=user.pk)
+            customer_serializer = CustomerSerializer(customer)
+            address_serializer = AddressSerializer(
+                customer.address_set.all(), many=True
+            )
+            data = {
+                "customer": customer_serializer.data,
+                "addresses": address_serializer.data,
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        elif user.role == 2:
+            vendor = Vendor.objects.get(pk=user.pk)
+            vendor_serializer = VendorSerializer(vendor)
+            return Response(vendor_serializer.data, status=status.HTTP_200_OK)
+        elif user.role == 1:
+            admin = Admin.objects.get(pk=user.pk)
+            admin_serializer = AdminSerializer(admin)
+            return Response(admin_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
 def send_email(to_email, subject, message):
     # Configure Gmail SMTP server details
     smtp_host = "smtp.gmail.com"

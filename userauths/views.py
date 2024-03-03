@@ -371,6 +371,31 @@ class VendorLoginAPIView(BaseLoginAPIView):
     model = Vendor
 
 
+class LogoutAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh_token")
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                return Response(
+                    {"success": True, "message": "Successfully logged out"},
+                    status=status.HTTP_205_RESET_CONTENT,
+                )
+            except Exception as e:
+                return Response(
+                    {"success": False, "message": "Logout failed", "error": str(e)},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"success": False, "message": "Refresh token not provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
 def send_email(to_email, subject, message):
     # Configure Gmail SMTP server details
     smtp_host = "smtp.gmail.com"

@@ -279,6 +279,98 @@ class EditAdminProfile(APIView):
         )
 
 
+class BaseLoginAPIView(APIView):
+    permission_classes = (AllowAny,)
+    serializer_class = None
+    model = None
+
+    def post(self, request):
+        try:
+            email = request.data["email"]
+            password = request.data["password"]
+            user = self.model.objects.get(email=email)
+            if user.role == 3:
+                if user.check_password(password):
+                    tokens = get_tokens_for_user(user)
+                    response = {
+                        "success": True,
+                        "message": "Login successful!",
+                        "token": tokens,
+                    }
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    response = {
+                        "success": False,
+                        "message": "Wrong password!",
+                        "error": "The password is incorrect for this customer",
+                    }
+                    return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+            if user.role == 2:
+                if user.check_password(password):
+                    tokens = get_tokens_for_user(user)
+                    response = {
+                        "success": True,
+                        "message": "Login successful!",
+                        "token": tokens,
+                    }
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    response = {
+                        "success": False,
+                        "message": "Wrong password!",
+                        "error": "The password is incorrect for this vendor",
+                    }
+                    return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+            if user.role == 1:
+                if user.check_password(password):
+                    tokens = get_tokens_for_user(user)
+                    response = {
+                        "success": True,
+                        "message": "Login successful!",
+                        "token": tokens,
+                    }
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    response = {
+                        "success": False,
+                        "message": "Wrong password!",
+                        "error": "The password is incorrect for this admin",
+                    }
+                    return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                response = {
+                    "success": False,
+                    "message": "Login failed!",
+                    "error": "The user is not a customer",
+                }
+                return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+
+        except self.model.DoesNotExist:
+            user = email
+            user_type = self.model.__name__
+            response = {
+                "success": False,
+                "message": "Login failed!",
+                "error": f"The user with email {user} does not exist as {user_type}",
+            }
+            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CustomerLoginAPIView(BaseLoginAPIView):
+    serializer_class = CustomerLoginSerializer
+    model = Customer
+
+
+class AdminLoginAPIView(BaseLoginAPIView):
+    serializer_class = AdminLoginSerializer
+    model = Admin
+
+
+class VendorLoginAPIView(BaseLoginAPIView):
+    serializer_class = VendorLoginSerializer
+    model = Vendor
+
+
 def send_email(to_email, subject, message):
     # Configure Gmail SMTP server details
     smtp_host = "smtp.gmail.com"

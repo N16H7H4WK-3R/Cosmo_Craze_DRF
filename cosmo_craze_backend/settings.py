@@ -157,6 +157,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 # REST FRAMEWORK SETTINGS (JWT)
 
 REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",

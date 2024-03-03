@@ -5,3 +5,7 @@
 
 # Database file
 *.sqlite3
+
+
+# env files
+.env

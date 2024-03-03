@@ -16,6 +16,10 @@ from .custom_permissions import (
     IsVendorAuthenticated,
     IsCustomerAuthenticated,
 )
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class CustomerRegistrationAPIView(APIView):
@@ -400,9 +404,9 @@ def send_email(to_email, subject, message):
     # Configure Gmail SMTP server details
     smtp_host = "smtp.gmail.com"
     smtp_port = 587
-    smtp_username = "aryan014kumar@gmail.com"
-    smtp_password = "fqrvdrpxsvuwykvc"
-    sender_email = "aryan014kumar@gmail.com"
+    smtp_username = os.environ.get("smtp_email")
+    smtp_password = os.environ.get("smtp_password")
+    sender_email = os.environ.get("sender_email")
 
     # Create a MIME message
     msg = MIMEText(message)

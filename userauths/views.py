@@ -206,6 +206,79 @@ class FetchUserDetails(APIView):
             )
 
 
+class EditCustomerProfile(APIView):
+    permission_classes = (IsAuthenticated, IsCustomerAuthenticated)
+
+    def patch(self, request):
+        user = request.user
+        customer = Customer.objects.get(pk=user.pk)
+        serializer = CustomerSerializer(customer, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "success": True,
+                    "message": "Profile updated successfully",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {
+                "success": False,
+                "message": "Profile update failed",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class EditVendorProfile(APIView):
+    permission_classes = (IsAuthenticated, IsVendorAuthenticated)
+
+    def patch(self, request):
+        user = request.user
+        vendor = Vendor.objects.get(pk=user.pk)
+        serializer = VendorSerializer(vendor, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "message": "Profile updated successfully"},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {
+                "success": False,
+                "message": "Profile update failed",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class EditAdminProfile(APIView):
+    permission_classes = (IsAuthenticated, IsAdminAuthenticated)
+
+    def patch(self, request):
+        user = request.user
+        admin = Admin.objects.get(pk=user.pk)
+        serializer = AdminSerializer(admin, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "message": "Profile updated successfully"},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {
+                "success": False,
+                "message": "Profile update failed",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
 def send_email(to_email, subject, message):
     # Configure Gmail SMTP server details
     smtp_host = "smtp.gmail.com"

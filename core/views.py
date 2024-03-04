@@ -1,20 +1,29 @@
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
 from userauths.custom_permissions import IsAdminAuthenticated
-from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse
-from rest_framework.views import APIView
-from .models import *
-from .serializers import *
+from .models import Category
+from .serializers import ProductCategorySerializer
 
 
-# Create your views here.
+class CreateProductCategory(generics.CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = ProductCategorySerializer
+    permission_classes = [IsAdminAuthenticated]
 
 
-class CreateProductCategory(APIView):
-    permission_classes = [IsAuthenticated, IsAdminAuthenticated]
+class ListProductCategory(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = ProductCategorySerializer
+    permission_classes = [AllowAny]
 
-    def post(self, request):
-        serializer = ProductCategorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+
+class UpdateProductCategory(generics.UpdateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = ProductCategorySerializer
+    permission_classes = [IsAdminAuthenticated]
+
+
+class DeleteProductCategory(generics.DestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = ProductCategorySerializer
+    permission_classes = [IsAdminAuthenticated]

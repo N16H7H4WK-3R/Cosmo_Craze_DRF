@@ -8,6 +8,7 @@ from core.models import (
     ProductReview,
     wishlist,
 )
+from django.utils.safestring import mark_safe
 
 
 class ProductImagesAdmin(admin.TabularInline):
@@ -24,10 +25,12 @@ class ProductAdmin(admin.ModelAdmin):
         "featured",
         "product_status",
     )
+    readonly_fields = ("product_id",)
 
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("category_title", "category_image")
+    readonly_fields = ("category_id",)
 
 
 class CartOrderAdmin(admin.ModelAdmin):
@@ -44,6 +47,7 @@ class CartOrderItemsAdmin(admin.ModelAdmin):
         "price",
         "total",
     )
+    readonly_fields = ("invoice_no",)
 
 
 class ProductReviewAdmin(admin.ModelAdmin):

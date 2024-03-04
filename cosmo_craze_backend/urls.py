@@ -6,4 +6,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", lambda request: HttpResponse("Welcome to Cosmo Craze Backend")),
     path("auth/", include("userauths.urls")),
+    path("core/", include("core.urls")),
 ]

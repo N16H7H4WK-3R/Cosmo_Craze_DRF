@@ -126,7 +126,7 @@ class VendorRegistrationAPIView(APIView):
 
 
 class AdminRegistrationAPIView(APIView):
-    permission_classes = (IsAdminAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminAuthenticated)
 
     def post(self, request):
         serializer = AdminSerializer(data=request.data)

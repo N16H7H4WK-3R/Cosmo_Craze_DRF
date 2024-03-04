@@ -52,7 +52,11 @@ class Category(models.Model):
 
 class Product(models.Model):
     product_id = ShortUUIDField(
-        unique=True, length=10, max_length=20, prefix="pro", alphabet="abcdefgh12345"
+        unique=True,
+        length=10,
+        max_length=20,
+        prefix="pro",
+        alphabet="abcdefgh12345",
     )
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)

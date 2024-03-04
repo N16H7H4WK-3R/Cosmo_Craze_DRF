@@ -1,23 +1,14 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from .helper import get_tokens_for_user, send_email
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from django.contrib.auth import authenticate
-from email.mime.text import MIMEText
-import threading
-import smtplib
 from .models import Customer, Vendor, Admin
-from .serializers import *
-from rest_framework_simplejwt.tokens import RefreshToken
-from .helper import get_tokens_for_user
-from .custom_permissions import (
-    IsAdminAuthenticated,
-    IsVendorAuthenticated,
-    IsCustomerAuthenticated,
-)
-import os
+from rest_framework.views import APIView
+from rest_framework import status
+from .custom_permissions import *
 from dotenv import load_dotenv
+from .serializers import *
+import threading
 
 load_dotenv()
 
@@ -398,24 +389,3 @@ class LogoutAPIView(APIView):
                 {"success": False, "message": "Refresh token not provided"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
-def send_email(to_email, subject, message):
-    # Configure Gmail SMTP server details
-    smtp_host = "smtp.gmail.com"
-    smtp_port = 587
-    smtp_username = os.environ.get("smtp_email")
-    smtp_password = os.environ.get("smtp_password")
-    sender_email = os.environ.get("sender_email")
-
-    # Create a MIME message
-    msg = MIMEText(message)
-    msg["Subject"] = subject[0]
-    msg["From"] = sender_email
-    msg["To"] = to_email
-
-    # Send the email
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_username, smtp_password)
-        server.send_message(msg)
